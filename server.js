@@ -21,7 +21,7 @@ router.delete("/texts/:id", deleteTextByIdHandler);
 
 const main = () => {
   app.use(router);
-  const port = 9002;
+  const port = process.env.PORT || 9002;
   app.listen(port, () => {
     console.log(`listening in http://localhost:${port}`);
   });

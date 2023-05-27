@@ -1,4 +1,5 @@
 node_modules
 serviceaccountkey.json
-index.json
 package-lock.json
+index.js
+image
