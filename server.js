@@ -1,30 +1,18 @@
 const express = require("express");
-const imagesHandler = require("./src/imagesHandler.js");
-const {
-  getAllTextsHandler,
-  addTextHandler,
-  getTextsByIdHandler,
-  editTextsByIdHandler,
-  deleteTextByIdHandler,
-} = require("./src/textsHandler.js");
-
-const router = express.Router();
 const app = express();
-app.use(express.json());
+const bodyParser = require("body-parser");
 
-router.post("/images", imagesHandler);
-router.post("/texts", addTextHandler);
-router.get("/texts", getAllTextsHandler);
-router.get("/texts/:id", getTextsByIdHandler);
-router.put("/texts/:id", editTextsByIdHandler);
-router.delete("/texts/:id", deleteTextByIdHandler);
+const prodifyRouter = require("./src/recordHandler");
 
-const main = () => {
-  app.use(router);
-  const port = process.env.PORT || 9002;
-  app.listen(port, () => {
-    console.log(`listening in http://localhost:${port}`);
-  });
-};
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(prodifyRouter);
 
-main();
+app.get("/", (req, res) => {
+  console.log("Response Success");
+  res.send("Good Job the API is working successfully");
+});
+
+const port = process.env.PORT || 9000;
+app.listen(port, () => {
+  console.log(`listening in http://localhost:${port}`);
+});
