@@ -12,10 +12,10 @@ const multer = Multer({
 
 //Connection to Database in Cloud SQL
 const connection = mysql.createConnection({
-  host: "34.101.229.115",
-  user: "root",
-  database: "prodify_db",
-  password: "123",
+  host: "fill_with_host",
+  user: "your_user",
+  database: "not_your_db",
+  password: "who_knows",
 });
 
 // router ini untuk post data text beserta gambar
