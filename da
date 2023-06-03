@@ -1,0 +1,11 @@
+[33mcommit ad294dd45b04903ee36080059204b03c36d4eed9[m[33m ([m[1;36mHEAD -> [m[1;32mprodify-auth-api[m[33m)[m
+Author: akmalm007 <akmalmaulana915@gmail.com>
+Date:   Sat Jun 3 19:45:20 2023 +0700
+
+    develop the code until done and already tested in Postman is work, although for the Admin and Mod function still have error
+
+[33mcommit e6086b5bd64d91b2c6720859a186ee9eb73ae105[m
+Author: akmalm007 <akmalmaulana915@gmail.com>
+Date:   Wed May 31 22:56:10 2023 +0700
+
+    buat database auth dengan sequalize
