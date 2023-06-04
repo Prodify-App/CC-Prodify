@@ -33,7 +33,7 @@ exports.signup = (req, res) => {
       } else {
         //user role = 1
         user.setRoles([1]).then(() => {
-          res.status(201).send({ message: "User was registeres sucessfully!" });
+          res.status(201).send({ message: "User was registered sucessfully!" });
         });
       }
     })
@@ -45,12 +45,12 @@ exports.signup = (req, res) => {
 exports.signin = (req, res) => {
   User.findOne({
     where: {
-      username: req.body.username,
+      email: req.body.email,
     },
   })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "user not found." });
+        return res.status(404).send({ message: "User Not Found." });
       }
 
       let passwordIsValid = bcrypt.compareSync(
@@ -75,7 +75,7 @@ exports.signin = (req, res) => {
         res.status(200).send({
           id: user.id,
           username: user.username,
-          emil: user.email,
+          email: user.email,
           roles: authorities,
           accessToken: token,
         });

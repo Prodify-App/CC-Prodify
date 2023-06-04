@@ -1,8 +1,8 @@
 module.exports = {
-  HOST: "isi_dengan_hostname",
-  USER: "isi_dengan_user",
-  PASSWORD: "password_user",
-  DB: "db_punya_kita",
+  HOST: "34.101.229.115",
+  USER: "root",
+  PASSWORD: "123",
+  DB: "prodify_db",
   dialect: "mysql",
   pool: {
     max: 5,
