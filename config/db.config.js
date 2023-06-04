@@ -1,7 +1,7 @@
 module.exports = {
-  HOST: "34.101.229.115",
+  HOST: "34.101.215.102",
   USER: "root",
-  PASSWORD: "123",
+  PASSWORD: "t0em=M0pV{tg$u:8",
   DB: "prodify_db",
   dialect: "mysql",
   pool: {

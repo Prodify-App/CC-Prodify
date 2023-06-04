@@ -1,7 +1,13 @@
 const express = require("express");
-const cors = require("cors");
-
 const app = express();
+const bodyParser = require("body-parser");
+
+const prodifyRouter = require("./src/recordHandler");
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(prodifyRouter);
+
+const cors = require("cors");
 
 const db = require("./models");
 const Role = db.role;
@@ -21,8 +27,8 @@ require("./routes/auth.routes")(app);
 require("./routes/user.routes")(app);
 
 app.get("/", (req, res) => {
-  res.status(200).send("API is Work, I guess...");
   console.log("Response Success");
+  res.send("Good Job the API is working successfully");
 });
 
 //app engine pake port 9002 di service defaultnya
