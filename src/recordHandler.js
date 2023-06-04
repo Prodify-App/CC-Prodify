@@ -26,6 +26,7 @@ const connection = mysql.createConnection({
 // kemudian dibagian router ini hanya ambil linknya saja
 router.post(
   "/insertProducts",
+  [authJwt.verifyToken],
   multer.single("attachment"),
   imgUpload.uploadToGcs,
   (req, res) => {
@@ -68,7 +69,7 @@ router.post(
   imgUpload.uploadToGcs,
   (req, res, next) => {
     const data = req.body;
-    if (req.file ** req.file.cloudStoragePublicUrl) {
+    if (req.file && req.file.cloudStoragePublicUrl) {
       data.imageUrl = req.file.cloudStoragePublicUrl;
     }
 
@@ -87,7 +88,7 @@ router.get("/getProducts", (req, res) => {
   });
 });
 
-router.get("/getProducts/:id", (req, res) => {
+router.get("/getProducts/:id", [authJwt.verifyToken], (req, res) => {
   const id = req.params.id;
 
   const query = "SELECT * FROM prodify_products WHERE id = ?";
@@ -95,7 +96,7 @@ router.get("/getProducts/:id", (req, res) => {
     if (err) {
       res.status(404).send({ message: err.message });
     } else {
-      res.status(200).json(rows);
+      res.status(200).json(rows[0]);
     }
   });
 });
