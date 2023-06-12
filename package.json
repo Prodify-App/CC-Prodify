@@ -1,5 +1,5 @@
 {
-  "name": "prodify-api-api",
+  "name": "prodify-app-api",
   "version": "1.0.0",
   "description": "API for authentication our App Prodify with NodeJS, JWT, and MySQL, For Image and Text Uploading API to Storage Bucket",
   "main": "server.js",

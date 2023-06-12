@@ -5,4 +5,4 @@ image_product
 image
 .vscode
 node_modules
-config/db.config.js
+/config/configdb.txt

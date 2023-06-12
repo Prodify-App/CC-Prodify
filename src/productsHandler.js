@@ -7,7 +7,6 @@ const { authJwt } = require("../middleware");
 const config = require("../config/db.config");
 const db = require("../models");
 
-const User = db.user;
 const Product = db.product;
 
 //MIddleware Untuk upload gambar
@@ -43,6 +42,22 @@ router.post(
     }
     const id_user = req.body.id_user;
 
+    if (!title) {
+      const response = res.status(400).send({
+        Status: "Fail",
+        Message: "Please fill the title",
+      });
+      return response;
+    }
+
+    if (!id_user) {
+      const response = res.status(400).send({
+        Status: "Fail",
+        Message: "Please fill User ID",
+      });
+      return response;
+    }
+
     Product.create({
       title: title,
       category: category,
@@ -52,11 +67,11 @@ router.post(
     })
       .then((createdProduct) => {
         res.status(201).send({
-          status: "Success",
-          message: "Insert Successful",
-          title: createdProduct.title,
-          category: createdProduct.category,
-          description: createdProduct.description,
+          Status: "Success",
+          Message: "Insert Successful",
+          Title: createdProduct.title,
+          Category: createdProduct.category,
+          Description: createdProduct.description,
           imageURL: createdProduct.imageUrl,
         });
       })
@@ -133,12 +148,16 @@ router.get("/getProducts", [authJwt.verifyToken], (req, res) => {
     if (err) {
       res.status(500).send({ message: err.message });
     } else {
-      res.status(200).json(rows);
+      res.status(200).send({
+        Status: "Success",
+        Message: "Products Retrieved",
+        listProducts: rows,
+      });
     }
   });
 });
 
-router.get("/getProducts/:iduser", [authJwt.verifyToken], (req, res) => {
+router.get("/getProducts/user/:iduser", [authJwt.verifyToken], (req, res) => {
   const iduser = req.params.iduser;
 
   const query =
@@ -147,23 +166,31 @@ router.get("/getProducts/:iduser", [authJwt.verifyToken], (req, res) => {
     if (err) {
       res.status(404).send({ message: err.message });
     } else {
-      res.status(200).json(rows);
+      res.status(200).send({
+        Status: "Success",
+        Message: "User Product Retrieved",
+        userProducts: rows,
+      });
     }
   });
 });
 
-router.get("/getProducts/:idproduct", [authJwt.verifyToken], (req, res) => {
-  const idproduct = req.params.idproduct;
+router.get(
+  "/getProducts/product/:idproduct",
+  [authJwt.verifyToken],
+  (req, res) => {
+    const idproduct = req.params.idproduct;
 
-  const query = "SELECT * FROM products WHERE id = ?";
-  connection.query(query, [iduser], (err, rows, field) => {
-    if (err) {
-      res.status(404).send({ message: err.message });
-    } else {
-      res.status(200).json(rows);
-    }
-  });
-});
+    const query = "SELECT * FROM products WHERE id = ?";
+    connection.query(query, [idproduct], (err, rows, field) => {
+      if (err) {
+        res.status(404).send({ message: err.message });
+      } else {
+        res.status(200).send(rows[0]);
+      }
+    });
+  }
+);
 
 router.put(
   "/editProducts/:id",
