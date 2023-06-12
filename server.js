@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 
-const prodifyRouter = require("./src/recordHandler");
+const prodifyRouter = require("./src/productsHandler");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(prodifyRouter);

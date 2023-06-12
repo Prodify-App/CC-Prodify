@@ -5,6 +5,10 @@ const Multer = require("multer");
 const imgUpload = require("./imagesHandler");
 const { authJwt } = require("../middleware");
 const config = require("../config/db.config");
+const db = require("../models");
+
+const User = db.user;
+const Product = db.product;
 
 //MIddleware Untuk upload gambar
 const multer = Multer({
@@ -34,32 +38,50 @@ router.post(
     const category = req.body.category;
     const description = req.body.description;
     let imageUrl = "";
-
     if (req.file && req.file.cloudStoragePublicUrl) {
       imageUrl = req.file.cloudStoragePublicUrl;
     }
+    const id_user = req.body.id_user;
 
-    const query =
-      "INSERT INTO prodify_products (title, category, description, imageURL) VALUES (?, ?, ?, ?)";
+    Product.create({
+      title: title,
+      category: category,
+      description: description,
+      imageURL: imageUrl,
+      id_user: id_user,
+    })
+      .then((createdProduct) => {
+        res.status(201).send({
+          status: "Success",
+          message: "Insert Successful",
+          title: createdProduct.title,
+          category: createdProduct.category,
+          description: createdProduct.description,
+          imageURL: createdProduct.imageUrl,
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+      });
 
-    connection.query(
-      query,
-      [title, category, description, imageUrl],
-      (err, rows, fields) => {
-        if (err) {
-          res.status(500).send({ message: err.message });
-        } else {
-          res.status(201).send({
-            status: "Success",
-            message: "Insert Successful",
-            title: title,
-            category: category,
-            description: description,
-            imageURL: imageUrl,
-          });
-        }
-      }
-    );
+    // res.status(201).send({
+    //   status: "Success",
+    //   message: "Insert Successful",
+    //   title: title,
+    //   category: category,
+    //   description: description,
+    //   imageURL: imageUrl,
+    // });
+
+    // res.status(500).send({ message: err.message });
+
+    // res.status(201).send({
+
+    // });
+
+    // res.status(500).send({
+    //   message: err.message,
+    // });
   }
 );
 
@@ -77,8 +99,36 @@ router.post(
   }
 );
 
-router.get("/getProducts", (req, res) => {
-  const query = "SELECT * FROM prodify_products";
+//Yang original ini adalah get reqeust yang belum ada foreign key ke Table User
+
+// router.get("/getProducts", (req, res) => {
+//   const query = "SELECT * FROM prodify_products";
+//   connection.query(query, (err, rows, field) => {
+//     if (err) {
+//       res.status(500).send({ message: err.message });
+//     } else {
+//       res.status(200).json(rows);
+//     }
+//   });
+// });
+
+// router.get("/getProducts/:id", [authJwt.verifyToken], (req, res) => {
+//   const id = req.params.id;
+
+//   const query = "SELECT * FROM prodify_products WHERE id = ?";
+//   connection.query(query, [id], (err, rows, field) => {
+//     if (err) {
+//       res.status(404).send({ message: err.message });
+//     } else {
+//       res.status(200).json(rows[0]);
+//     }
+//   });
+// });
+
+//Punya Sequalize
+
+router.get("/getProducts", [authJwt.verifyToken], (req, res) => {
+  const query = "SELECT * FROM products";
   connection.query(query, (err, rows, field) => {
     if (err) {
       res.status(500).send({ message: err.message });
@@ -88,15 +138,29 @@ router.get("/getProducts", (req, res) => {
   });
 });
 
-router.get("/getProducts/:id", [authJwt.verifyToken], (req, res) => {
-  const id = req.params.id;
+router.get("/getProducts/:iduser", [authJwt.verifyToken], (req, res) => {
+  const iduser = req.params.iduser;
 
-  const query = "SELECT * FROM prodify_products WHERE id = ?";
-  connection.query(query, [id], (err, rows, field) => {
+  const query =
+    "SELECT products.title, products.category, products.description, products.imageURL FROM products INNER JOIN prodify_users ON products.id_user=prodify_users.id WHERE id_user = ?";
+  connection.query(query, [iduser], (err, rows, field) => {
     if (err) {
       res.status(404).send({ message: err.message });
     } else {
-      res.status(200).json(rows[0]);
+      res.status(200).json(rows);
+    }
+  });
+});
+
+router.get("/getProducts/:idproduct", [authJwt.verifyToken], (req, res) => {
+  const idproduct = req.params.idproduct;
+
+  const query = "SELECT * FROM products WHERE id = ?";
+  connection.query(query, [iduser], (err, rows, field) => {
+    if (err) {
+      res.status(404).send({ message: err.message });
+    } else {
+      res.status(200).json(rows);
     }
   });
 });
