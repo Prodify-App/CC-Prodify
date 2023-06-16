@@ -23,14 +23,15 @@ Then do this command
 1. Go to config folder and replace the db.config.js with your own configuration in cloud SQL
 2. Then do NPM install to install the dependency in the cloud editor
 
-    npm install
+   `npm install`
 
  3. After that check the code if there any error with npm run start
  
-    npm run start
+    `npm run start`
+    
 3. Finally do this command
 
-    gcloud app deploy
+    `gcloud app deploy`
 
  
 4. Wait for the app engine finish the deployment and check the link for response
@@ -39,5 +40,5 @@ Then do this command
 
 1. There is already an Dockerfile in the file so all you need to do just do builds with Cloud Build then Deploy it in Cloud Run Console
 
-    gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/prodify-app-api:v1.0
+    `gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/prodify-app-api:v1.0`
 
