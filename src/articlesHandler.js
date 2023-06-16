@@ -42,6 +42,14 @@ router.post(
       return reponse;
     }
 
+    if (!id_user) {
+      const reponse = res.status(400).send({
+        Status: "Fail",
+        Message: "Please fill the id user",
+      });
+      return reponse;
+    }
+
     Article.create({
       title: title,
       description: description,
@@ -52,9 +60,7 @@ router.post(
         res.status(201).send({
           Status: "Success",
           Message: "Articles Uploaded",
-          Title: createdArticle.title,
-          Description: createdArticle.description,
-          imageURL: createdArticle.imageUrl,
+          createdArticle,
         });
       })
       .catch((err) => {
@@ -64,51 +70,154 @@ router.post(
 );
 
 router.get("/getArticles", (req, res) => {
-  const query = "SELECT title, description, imageURL FROM articles";
-
-  connection.query(query, (err, rows, field) => {
-    if (err) {
-      res.status(500).send({ Message: err.message });
-    } else {
+  Article.findAll()
+    .then((articles) => {
       res.status(200).send({
-        Status: "Success",
-        Message: "Article Retrieved",
-        Articles: rows,
+        Message: "Success",
+        listArticles: articles,
       });
-    }
-  });
+    })
+    .catch((err) => {
+      res.status(500).send({ Messge: err.message });
+    });
+
+  // const query = "SELECT * FROM articles";
+
+  // connection.query(query, (err, rows, field) => {
+  //   if (err) {
+  //     res.status(500).send({ Message: err.message });
+  //   } else {
+  //     res.status(200).send({
+  //       Status: "Success",
+  //       Message: "Article Retrieved",
+  //       Articles: rows,
+  //     });
+  //   }
+  // });
 });
 
 router.get("/getArticles/user/:id", (req, res) => {
   const id = req.params.id;
 
-  const query =
-    "SELECT articles.title, articles.description, articles.imageURL from articles INNER JOIN prodify_users ON prodify_users.id=articles.id_user WHERE id_user = ?";
-  connection.query(query, [id], (err, rows, field) => {
-    if (err) {
-      res.status(500).send({ Message: err.message });
-    } else {
+  Article.findAll({
+    where: {
+      id_user: id,
+    },
+  })
+    .then((articles) => {
       res.status(200).send({
-        Status: "Success",
-        Message: "Articles Retrieved",
-        userArticles: rows,
+        Message: "Success",
+        Article: articles,
       });
-    }
-  });
+    })
+    .catch((err) => {
+      res.status(500).send({ Message: err.message });
+    });
+  // const query =
+  //   "SELECT articles.title, articles.description, articles.imageURL from articles INNER JOIN prodify_users ON prodify_users.id=articles.id_user WHERE id_user = ?";
+  // connection.query(query, [id], (err, rows, field) => {
+  //   if (err) {
+  //     res.status(500).send({ Message: err.message });
+  //   } else {
+  //     res.status(200).send({
+  //       Status: "Success",
+  //       Message: "Articles Retrieved",
+  //       userArticles: rows,
+  //     });
+  //   }
+  // });
 });
 
 router.get("/getArticles/articles/:id", (req, res) => {
   const id = req.params.id;
 
-  const query = "SELECT title, description, imageURL FROM articles";
+  Article.findAll({
+    where: {
+      id: id,
+    },
+  }).then((articles) => {
+    res.status(200).send({
+      Message: "Success",
+      Article: articles,
+    });
+  });
 
-  connection.query(query, [id], (err, rows, field) => {
-    if (err) {
-      res.status(500).send({ Message: err.message });
+  // const query =
+  //   "SELECT title, description, imageURL FROM articles WHERE id = ?";
+
+  // connection.query(query, [id], (err, rows, field) => {
+  //   if (err) {
+  //     res.status(500).send({ Message: err.message });
+  //   } else {
+  //     res.status(200).send(rows[0]);
+  //   }
+  // });
+});
+//Tambahin Get yang lain
+
+router.put(
+  "/editArticles/:id",
+  multer.single("image"),
+  imgUpload.uploadToGcs,
+  (req, res) => {
+    const id = req.params.id;
+    const title = req.body.title;
+    const description = req.body.description;
+    let imageUrl = "";
+
+    if (req.file && req.file.cloudStoragePublicUrl) {
+      imageUrl = req.file.cloudStoragePublicUrl;
+    }
+
+    Article.update(
+      {
+        title: title,
+        description: description,
+        imageURL: imageUrl,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    ).then((rowsUpdated) => {
+      if (rowsUpdated[0] === 0) {
+        res.status(404).send({
+          Status: "Fail",
+          Message: "Article not found",
+        });
+      } else {
+        Article.findByPk(id).then((updatedArticle) => {
+          res.status(200).send({
+            Status: "Success",
+            Message: "Articles Updated",
+            UpdatedArticle: updatedArticle,
+          });
+        });
+      }
+    });
+  }
+);
+
+router.delete("/deleteArticles/:id", (req, res) => {
+  const id = req.params.id;
+
+  Article.destroy({
+    where: {
+      id: id,
+    },
+  }).then((deletedArticle) => {
+    if (deletedArticle === 0) {
+      res.status(404).send({
+        Status: "Fail",
+        Message: "Article not found",
+      });
     } else {
-      res.status(200).send(rows[0]);
+      res.status(200).send({
+        Status: "Success",
+        Message: "Article Deleted",
+      });
     }
   });
 });
-//Tambahin Get yang lain
 module.exports = router;

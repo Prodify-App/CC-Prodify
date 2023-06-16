@@ -69,34 +69,12 @@ router.post(
         res.status(201).send({
           Status: "Success",
           Message: "Insert Successful",
-          Title: createdProduct.title,
-          Category: createdProduct.category,
-          Description: createdProduct.description,
-          imageURL: createdProduct.imageUrl,
+          createdProduct,
         });
       })
       .catch((err) => {
         res.status(500).send({ message: err.message });
       });
-
-    // res.status(201).send({
-    //   status: "Success",
-    //   message: "Insert Successful",
-    //   title: title,
-    //   category: category,
-    //   description: description,
-    //   imageURL: imageUrl,
-    // });
-
-    // res.status(500).send({ message: err.message });
-
-    // res.status(201).send({
-
-    // });
-
-    // res.status(500).send({
-    //   message: err.message,
-    // });
   }
 );
 
@@ -143,15 +121,16 @@ router.post(
 //Punya Sequalize
 
 router.get("/getProducts", [authJwt.verifyToken], (req, res) => {
-  const query = "SELECT * FROM products";
-  connection.query(query, (err, rows, field) => {
-    if (err) {
-      res.status(500).send({ message: err.message });
+  Product.findAll().then((products) => {
+    if (products == "") {
+      res.status("404").send({
+        Message: "Empty",
+      });
     } else {
       res.status(200).send({
         Status: "Success",
         Message: "Products Retrieved",
-        listProducts: rows,
+        listProducts: products,
       });
     }
   });
@@ -160,18 +139,16 @@ router.get("/getProducts", [authJwt.verifyToken], (req, res) => {
 router.get("/getProducts/user/:iduser", [authJwt.verifyToken], (req, res) => {
   const iduser = req.params.iduser;
 
-  const query =
-    "SELECT products.title, products.category, products.description, products.imageURL FROM products INNER JOIN prodify_users ON products.id_user=prodify_users.id WHERE id_user = ?";
-  connection.query(query, [iduser], (err, rows, field) => {
-    if (err) {
-      res.status(404).send({ message: err.message });
-    } else {
-      res.status(200).send({
-        Status: "Success",
-        Message: "User Product Retrieved",
-        userProducts: rows,
-      });
-    }
+  Product.findAll({
+    where: {
+      id_user: iduser,
+    },
+  }).then((products) => {
+    res.status(200).send({
+      Status: "Success",
+      Message: "User Product Retrieved",
+      userProducts: products,
+    });
   });
 });
 
@@ -181,13 +158,16 @@ router.get(
   (req, res) => {
     const idproduct = req.params.idproduct;
 
-    const query = "SELECT * FROM products WHERE id = ?";
-    connection.query(query, [idproduct], (err, rows, field) => {
-      if (err) {
-        res.status(404).send({ message: err.message });
-      } else {
-        res.status(200).send(rows[0]);
-      }
+    Product.findAll({
+      where: {
+        id: idproduct,
+      },
+    }).then((products) => {
+      res.status(200).send({
+        Status: "Success",
+        Message: "User Product Retrieved",
+        products,
+      });
     });
   }
 );
@@ -236,4 +216,5 @@ router.delete("/deleteProducts/:id", (req, res) => {
     }
   });
 });
+
 module.exports = router;

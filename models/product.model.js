@@ -3,15 +3,15 @@ const { Sequelize, DataTypes } = require("sequelize");
 module.exports = (sequelize, Sequelize) => {
   const Product = sequelize.define("products", {
     title: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     category: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     imageURL: {
