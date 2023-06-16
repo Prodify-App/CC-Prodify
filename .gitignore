@@ -6,3 +6,4 @@ image
 .vscode
 node_modules
 /config/configdb.txt
+main.tf
